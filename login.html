@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能车间开发与应用平台 - 登录</title>
+    <style>
+        /**
+         * 全局样式重置
+         */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /**
+         * 页面主体样式
+         */
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /**
+         * 登录容器样式
+         */
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 48px;
+            width: 100%;
+            max-width: 420px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        /**
+         * 滑入动画
+         */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /**
+         * Logo区域样式
+         */
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .logo-title {
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .logo-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /**
+         * 表单样式
+         */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #ff4757;
+        }
+
+        .error-message {
+            color: #ff4757;
+            font-size: 12px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /**
+         * 登录按钮样式
+         */
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        /**
+         * 测试账号区域样式
+         */
+        .test-accounts {
+            margin-top: 32px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .test-accounts-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .test-accounts-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .test-account-item {
+            font-size: 12px;
+            color: #555;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+
+        /**
+         * 页脚样式
+         */
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">🏭</div>
+            <div class="logo-title">智能车间开发与应用平台</div>
+            <div class="logo-subtitle">Intelligent Workshop Development Platform</div>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="studentId">学号</label>
+                <input 
+                    type="text" 
+                    id="studentId" 
+                    name="studentId" 
+                    class="form-input" 
+                    placeholder="请输入学号" 
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">密码</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-input" 
+                    placeholder="请输入密码" 
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="error-message" id="errorMsg">账号或密码错误，请重试</div>
+
+            <button type="submit" class="login-btn">登录</button>
+        </form>
+
+        <div class="test-accounts">
+            <div class="test-accounts-title">测试账号（学号/密码）</div>
+            <div class="test-accounts-list">
+                <div class="test-account-item">admin / admin</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2026 智能车间开发与应用平台
+        </div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script>
+        /**
+         * 登录页面主逻辑
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查是否已登录，已登录用户直接跳转应用中心
+            if (isLoggedIn()) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // 获取DOM元素
+            const loginForm = document.getElementById('loginForm');
+            const studentIdInput = document.getElementById('studentId');
+            const passwordInput = document.getElementById('password');
+            const errorMsg = document.getElementById('errorMsg');
+
+            /**
+             * 表单提交处理
+             * @param {Event} e - 表单提交事件
+             */
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const studentId = studentIdInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                // 清除之前的错误状态
+                studentIdInput.classList.remove('error');
+                passwordInput.classList.remove('error');
+                errorMsg.classList.remove('show');
+
+                // 验证账号密码
+                const userInfo = validateCredentials(studentId, password);
+
+                if (userInfo) {
+                    // 登录成功，保存状态并跳转
+                    saveLoginState(userInfo);
+                    window.location.href = 'index.html';
+                } else {
+                    // 登录失败，显示错误
+                    studentIdInput.classList.add('error');
+                    passwordInput.classList.add('error');
+                    errorMsg.classList.add('show');
+                    passwordInput.value = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
