@@ -193,9 +193,8 @@ function handleAppNavigation(app) {
             // 获取当前登录账号
             const loginState = getLoginState();
             if (loginState && loginState.studentId === 'adminkm') {
-                // adminkm账号打开本地路径
-                // 这里预留本地路径位置，后续根据实际安装位置修改
-                alert('博图软件本地路径打开功能已预留，等待配置具体路径');
+                // adminkm账号使用注册表打开本地博图软件
+                launchTiaPortal();
                 return;
             } else {
                 // admin账号使用VNC链接
