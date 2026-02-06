@@ -10,7 +10,8 @@
  * @type {Array<{studentId: string, password: string, vmNumber: string, edgeServerUrl: string, difyUrl: string}>
  */
 const ACCOUNTS = [
-    { studentId: 'admin', password: 'admin', vmNumber: '1', edgeServerUrl: 'http://39.104.80.221:25006/#/login', difyUrl: 'https://vd01.zime.edu.cn/dify/' }
+    { studentId: 'admin', password: 'admin', vmNumber: '1', edgeServerUrl: 'http://39.104.80.221:25006/#/login', difyUrl: 'https://vd01.zime.edu.cn/dify/' },
+    { studentId: 'adminkm', password: 'admin', vmNumber: '2', edgeServerUrl: 'http://localhost:8080', difyUrl: 'http://115.236.67.186:45632/' }
 ];
 
 /**
@@ -187,6 +188,28 @@ function handleAppNavigation(app) {
             targetUrl = loginState.difyUrl;
         }
 
+        // 博图软件特殊处理：根据账号打开不同路径
+        if (app.name === '博图软件') {
+            // 获取当前登录账号
+            const loginState = getLoginState();
+            if (loginState && loginState.studentId === 'adminkm') {
+                // adminkm账号打开本地路径
+                // 这里预留本地路径位置，后续根据实际安装位置修改
+                alert('博图软件本地路径打开功能已预留，等待配置具体路径');
+                return;
+            } else {
+                // admin账号使用VNC链接
+                window.open('http://39.104.80.221:25007/vnc.html', '_blank');
+                return;
+            }
+        }
+        
+        // VC软件特殊处理：显示未安装提示
+        if (app.name === 'VC 软件') {
+            alert('本地未安装VC软件');
+            return;
+        }
+        
         // 其他应用在新窗口打开
         window.open(targetUrl, '_blank');
     } catch (e) {
