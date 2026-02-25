@@ -11,7 +11,8 @@
  */
 const ACCOUNTS = [
     { studentId: 'admin', password: 'admin', vmNumber: '1', edgeServerUrl: 'http://39.104.80.221:25006/#/login', difyUrl: 'https://vd01.zime.edu.cn/dify/' },
-    { studentId: 'adminkm', password: 'admin', vmNumber: '2', edgeServerUrl: 'http://localhost:8080', difyUrl: 'http://115.236.67.186:45632/' }
+    { studentId: 'adminkm', password: 'admin', vmNumber: '2', edgeServerUrl: 'http://localhost:8080', difyUrl: 'http://115.236.67.186:45632/' },
+    { studentId: 'admindp', password: 'admin', vmNumber: '3', edgeServerUrl: 'http://localhost:8080', difyUrl: 'http://115.236.67.186:45632/' }
 ];
 
 /**
@@ -188,24 +189,17 @@ function handleAppNavigation(app) {
             targetUrl = loginState.difyUrl;
         }
 
-        // 博图软件特殊处理：根据账号打开不同路径
+        // 博图软件特殊处理：打开本地软件
         if (app.name === '博图软件') {
-            // 获取当前登录账号
-            const loginState = getLoginState();
-            if (loginState && loginState.studentId === 'adminkm') {
-                // adminkm账号使用注册表打开本地博图软件
-                launchTiaPortal();
-                return;
-            } else {
-                // admin账号使用VNC链接
-                window.open('http://39.104.80.221:25007/vnc.html', '_blank');
-                return;
-            }
+            // 所有账号都使用注册表打开本地博图软件
+            launchTiaPortal();
+            return;
         }
         
-        // VC软件特殊处理：显示未安装提示
+        // VC软件特殊处理：打开本地软件
         if (app.name === 'VC 软件') {
-            alert('本地未安装VC软件');
+            // 所有账号都使用注册表打开本地VC软件
+            launchVisualComponents();
             return;
         }
         
