@@ -274,19 +274,12 @@
                         <div class="logo-icon">🏭</div>
                         <div class="header-info">
                             <div class="header-title">智能车间开发与应用平台</div>
-                            <div class="header-subtitle">虚拟机 ${loginState.vmNumber}号 | 用户 ${loginState.studentId}</div>
+                            <div class="header-subtitle"> ${loginState.vmNumber}号 | 用户 ${loginState.studentId}</div>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <a href="http://leaplab.hzzc-tech.cn/user/" target="_blank" style="
-                            font-size: 12px;
-                            color: rgba(255,255,255,0.7);
-                            text-decoration: none;
-                            transition: all 0.3s ease;
-                        " onmouseover="this.style.color='white'; this.style.textDecoration='underline';" onmouseout="this.style.color='rgba(255,255,255,0.7)'; this.style.textDecoration='none';">
-                            实训
-                        </a>
-                        <button class="logout-btn" onclick="handleLogout()">退出虚拟机</button>
+
+                        <button class="logout-btn" onclick="handleLogout()">退出</button>
                     </div>
                 </div>
             `;

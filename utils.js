@@ -10,9 +10,31 @@
  * @type {Array<{studentId: string, password: string, vmNumber: string, edgeServerUrl: string, difyUrl: string}>
  */
 const ACCOUNTS = [
-    { studentId: 'admin', password: 'admin', vmNumber: '1', edgeServerUrl: 'http://39.104.80.221:25006/#/login', difyUrl: 'https://vd01.zime.edu.cn/dify/' },
-    { studentId: 'adminkm', password: 'admin', vmNumber: '2', edgeServerUrl: 'http://localhost:8080', difyUrl: 'http://115.236.67.186:45632/' },
-    { studentId: 'admindp', password: 'admin', vmNumber: '3', edgeServerUrl: 'http://localhost:8080', difyUrl: 'http://115.236.67.186:45632/' }
+    { 
+        studentId: 'admin', 
+        password: 'admin', 
+        vmNumber: '1', 
+        edgeServerUrl: 'http://39.104.80.221:25006/#/login', 
+        difyUrl: 'https://vd01.zime.edu.cn/dify/',
+        useVnc: true,
+        vncUrl: 'http://39.104.80.221:25007/vnc.html'
+    },
+    { 
+        studentId: 'adminkm', 
+        password: 'admin', 
+        vmNumber: '2', 
+        edgeServerUrl: 'http://localhost:8080', 
+        difyUrl: 'http://115.236.67.186:45632/',
+        useVnc: false
+    },
+    { 
+        studentId: 'admindp', 
+        password: 'admin', 
+        vmNumber: '3', 
+        edgeServerUrl: 'http://localhost:8080', 
+        difyUrl: 'http://115.236.67.186:45632/',
+        useVnc: false
+    }
 ];
 
 /**
@@ -48,6 +70,8 @@ function saveLoginState(userInfo) {
         vmNumber: userInfo.vmNumber,
         edgeServerUrl: userInfo.edgeServerUrl,
         difyUrl: userInfo.difyUrl,
+        useVnc: userInfo.useVnc,
+        vncUrl: userInfo.vncUrl,
         expireTime: Date.now() + LOGIN_EXPIRE_MS
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(loginState));
@@ -75,7 +99,9 @@ function getLoginState() {
             studentId: loginState.studentId,
             vmNumber: loginState.vmNumber,
             edgeServerUrl: loginState.edgeServerUrl,
-            difyUrl: loginState.difyUrl
+            difyUrl: loginState.difyUrl,
+            useVnc: loginState.useVnc,
+            vncUrl: loginState.vncUrl
         };
     } catch (e) {
         console.error('读取登录状态失败:', e);
@@ -110,6 +136,19 @@ const APP_MODULES = [
         icon: '📚'
     },
     {
+        name: '数字化工厂',
+        // type: '关联服务访问',
+        target: 'http://linux-server:8080/digital-factory',
+        icon: '🏗️'
+    },
+    {
+        name: '边缘服务器',
+        // type: '关联服务访问',
+        target: 'dynamic_edge_server',
+        icon: '⚡'
+        // accountTemplate: 'admin 000000'
+    },
+    {
         name: 'IoT 平台',
         // type: '外部链接',
         target: 'http://leapiot.hzzc-tech.cn/#/preview',
@@ -122,39 +161,26 @@ const APP_MODULES = [
         icon: '🏭'
     },
     {
-        name: '博图软件',
+        name: '智能制造大数据实训平台',
+        // type: '外部链接',
+        target: 'http://leaplab.hzzc-tech.cn/user/',
+        icon: '📊'
+    },
+    {
+        name: '数字化实训室',
         // type: '本地软件调用',
-        target: 'http://39.104.80.221:25007/vnc.html',
-        icon: '🔧'
+        target: '实训室',
+        icon: '🔬'
     },
     {
-        name: 'VC 软件',
-        // type: '本地软件调用',
-        target: 'http://39.104.80.221:25007/vnc.html',
-        icon: '🎮'
-    },
-    {
-        name: '边缘服务器',
-        // type: '关联服务访问',
-        target: 'dynamic_edge_server',
-        icon: '⚡'
-        // accountTemplate: 'admin 000000'
-    },
-    {
-        name: '数字化工厂',
-        // type: '关联服务访问',
-        target: 'http://linux-server:8080/digital-factory',
-        icon: '🏗️'
-    },
-    {
-        name: 'Dify',
+        name: '人工智能应用平台',
         // type: '关联服务访问',
         target: 'dynamic_dify',
         icon: '🤖'
         // accountTemplate: 'Zncj{vmNumber}@edu.cn Zncj{vmNumber}@2024!'
     },
     {
-        name: '智能教学 AI',
+        name: '小z教学助手',
         // type: '预留链接',
         target: 'https://chat.cyberedu.tech/',
         icon: '🧠'
@@ -178,6 +204,12 @@ function handleAppNavigation(app) {
             return;
         }
 
+        // 数字化实训室特殊处理：显示弹窗选择软件
+        if (app.name === '数字化实训室') {
+            showTrainingRoomModal();
+            return;
+        }
+
         // 获取当前登录状态
         const loginState = getLoginState();
         
@@ -189,24 +221,135 @@ function handleAppNavigation(app) {
             targetUrl = loginState.difyUrl;
         }
 
-        // 博图软件特殊处理：打开本地软件
-        if (app.name === '博图软件') {
-            // 所有账号都使用注册表打开本地博图软件
-            launchTiaPortal();
-            return;
-        }
-        
-        // VC软件特殊处理：打开本地软件
-        if (app.name === 'VC 软件') {
-            // 所有账号都使用注册表打开本地VC软件
-            launchVisualComponents();
-            return;
-        }
-        
         // 其他应用在新窗口打开
         window.open(targetUrl, '_blank');
     } catch (e) {
         alert('跳转失败，请检查配置');
+    }
+}
+
+/**
+ * 显示智能实训室弹窗
+ */
+function showTrainingRoomModal() {
+    // 检查弹窗是否已存在
+    if (document.getElementById('trainingRoomModal')) {
+        return;
+    }
+
+    // 获取当前登录状态
+    const loginState = getLoginState();
+    const useVnc = loginState && loginState.useVnc;
+    const vncUrl = loginState && loginState.vncUrl;
+
+    // 弹窗HTML
+    const modalHTML = `
+        <div id="trainingRoomModal" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        ">
+            <div style="
+                background: white;
+                border-radius: 16px;
+                padding: 32px;
+                max-width: 600px;
+                width: 90%;
+                max-height: 80vh;
+                overflow-y: auto;
+                animation: slideUp 0.3s ease;
+            ">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="font-size: 24px; color: #333; font-weight: 600; margin: 0;">数字化实训室</h2>
+                    <button onclick="closeTrainingRoomModal()" style="
+                        background: none;
+                        border: none;
+                        font-size: 28px;
+                        cursor: pointer;
+                        color: #999;
+                        padding: 0 8px;
+                        line-height: 1;
+                    ">&times;</button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                    <div onclick="${useVnc && vncUrl ? `window.open('${vncUrl}', '_blank'); closeTrainingRoomModal();` : 'launchTiaPortal(); closeTrainingRoomModal();'}" style="
+                        background: #f8f9fa;
+                        border: 2px solid #e9ecef;
+                        border-radius: 12px;
+                        padding: 32px 16px;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    ">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🔧</div>
+                        <div style="font-size: 18px; font-weight: 600; color: #333;">西门子PLC技术实训室</div>
+                    </div>
+                    <div onclick="${useVnc && vncUrl ? `window.open('${vncUrl}', '_blank'); closeTrainingRoomModal();` : 'launchVisualComponents(); closeTrainingRoomModal();'}" style="
+                        background: #f8f9fa;
+                        border: 2px solid #e9ecef;
+                        border-radius: 12px;
+                        padding: 32px 16px;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    ">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🎮</div>
+                        <div style="font-size: 18px; font-weight: 600; color: #333;">制造仿真技术实训室</div>
+                    </div>
+                    <div onclick="window.open('https://www.720yun.com/vr/c5ejz7saka3', '_blank'); closeTrainingRoomModal();" style="
+                        background: #f8f9fa;
+                        border: 2px solid #e9ecef;
+                        border-radius: 12px;
+                        padding: 32px 16px;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    ">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🏭</div>
+                        <div style="font-size: 18px; font-weight: 600; color: #333;">智能车间实训室</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <style>
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            #trainingRoomModal > div > div > div:hover {
+                background: #667eea;
+                border-color: #667eea;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+            }
+        </style>
+    </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+/**
+ * 关闭智能实训室弹窗
+ */
+function closeTrainingRoomModal() {
+    const modal = document.getElementById('trainingRoomModal');
+    if (modal) {
+        modal.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => modal.remove(), 300);
     }
 }
 
